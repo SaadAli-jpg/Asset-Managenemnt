@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Asset Management System - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+      * {
+        font-family: 'Inter', sans-serif;
+      }
+
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .status-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .status-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      .asset-row {
+        transition: all 0.2s ease;
+      }
+
+      .asset-row:hover {
+        background-color: #f8fafc;
+        transform: translateX(4px);
+      }
+
+      .quick-action-btn {
+        transition: all 0.3s ease;
+      }
+
+      .quick-action-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
+      }
+
+      .category-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .category-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      .activity-item {
+        animation: slideIn 0.5s ease forwards;
+        opacity: 0;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .pulse-dot {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .sidebar-item {
+        transition: all 0.2s ease;
+      }
+
+      .sidebar-item:hover {
+        background-color: #f1f5f9;
+        border-left: 3px solid #3b82f6;
+        padding-left: 21px;
+      }
+
+      .search-input:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .notification-badge {
+        animation: bounce 1s infinite;
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-2px);
+        }
+      }
+
+      .toast {
+        animation: slideInRight 0.3s ease forwards;
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .fade-out {
+        animation: fadeOut 0.3s ease forwards;
+      }
+
+      @keyframes fadeOut {
+        to {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Header -->
+    <header class="glass-effect fixed top-0 left-0 right-0 z-50 shadow-sm">
+      <div class="px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-cube text-blue-600 text-2xl"></i>
+              <h1 class="text-xl font-bold text-gray-800">AssetHub</h1>
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="flex-1 max-w-xl mx-8">
+            <div class="relative">
+              <input
+                type="text"
+                id="globalSearch"
+                placeholder="Search assets, categories, or users..."
+                class="search-input w-full px-4 py-2 pl-10 pr-4 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-all"
+              />
+              <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+          </div>
+
+          <!-- User Menu -->
+          <div class="flex items-center space-x-4">
+            <button
+              class="relative p-2 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <i class="fas fa-bell text-xl"></i>
+              <span
+                class="notification-badge absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"
+              ></span>
+            </button>
+            <div
+              class="flex items-center space-x-3 cursor-pointer hover:bg-gray-100 rounded-lg px-3 py-2 transition-colors"
+            >
+              <img
+                src="https://picsum.photos/seed/user1/40/40"
+                alt="User"
+                class="w-8 h-8 rounded-full"
+              />
+              <div>
+                <p class="text-sm font-medium text-gray-700">Saad Ali</p>
+                <p class="text-xs text-gray-500">Administrator</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex pt-16">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-white h-screen fixed left-0 top-16 shadow-lg">
+        <nav class="p-4">
+          <ul class="space-y-2">
+            <li
+              class="sidebar-item rounded-lg px-4 py-3 text-gray-700 font-medium"
+            >
+              <i class="fas fa-dashboard w-5 mr-3"></i>
+              Dashboard
+            </li>
+            <li
+              class="sidebar-item rounded-lg px-4 py-3 text-gray-600 hover:text-gray-800"
+            >
+              <i class="fas fa-box w-5 mr-3"></i>
+              All Assets
+            </li>
+            <li
+              class="sidebar-item rounded-lg px-4 py-3 text-gray-600 hover:text-gray-800"
+            >
+              <i class="fas fa-tags w-5 mr-3"></i>
+              Categories
+            </li>
+            <li
+              class="sidebar-item rounded-lg px-4 py-3 text-gray-600 hover:text-gray-800"
+            >
+              <i class="fas fa-users w-5 mr-3"></i>
+              Users
+            </li>
+            <li
+              class="sidebar-item rounded-lg px-4 py-3 text-gray-600 hover:text-gray-800"
+            >
+              <i class="fas fa-history w-5 mr-3"></i>
+              Activity Log
+            </li>
+            <li
+              class="sidebar-item rounded-lg px-4 py-3 text-gray-600 hover:text-gray-800"
+            >
+              <i class="fas fa-chart-line w-5 mr-3"></i>
+              Reports
+            </li>
+            <li
+              class="sidebar-item rounded-lg px-4 py-3 text-gray-600 hover:text-gray-800"
+            >
+              <i class="fas fa-cog w-5 mr-3"></i>
+              Settings
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 ml-64 p-6">
+        <!-- Quick Actions Bar -->
+        <div class="mb-6 flex items-center justify-between">
+          <h2 class="text-2xl font-bold text-gray-800">Dashboard Overview</h2>
+          <div class="flex space-x-3">
+            <button
+              onclick="openAddAssetModal()"
+              class="quick-action-btn bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+            >
+              <i class="fas fa-plus"></i>
+              <span>Add Asset</span>
+            </button>
+            <button
+              onclick="openUpdateModal()"
+              class="quick-action-btn bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2"
+            >
+              <i class="fas fa-edit"></i>
+              <span>Update Details</span>
+            </button>
+            <button
+              onclick="openAssignModal()"
+              class="quick-action-btn bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center space-x-2"
+            >
+              <i class="fas fa-user-plus"></i>
+              <span>Assign User</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Status Indicators -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div class="status-card bg-white rounded-xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <div class="bg-blue-100 p-3 rounded-lg">
+                <i class="fas fa-cube text-blue-600 text-xl"></i>
+              </div>
+              <span class="text-sm text-green-600 font-medium">+12%</span>
+            </div>
+            <h3 id="totalAssets" class="text-2xl font-bold text-gray-800">
+              1,284
+            </h3>
+            <p class="text-gray-500 text-sm mt-1">Total Assets</p>
+          </div>
+
+          <div class="status-card bg-white rounded-xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <div class="bg-green-100 p-3 rounded-lg">
+                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+              </div>
+              <span class="text-sm text-green-600 font-medium">+8%</span>
+            </div>
+            <h3 id="activeAssets" class="text-2xl font-bold text-gray-800">
+              892
+            </h3>
+            <p class="text-gray-500 text-sm mt-1">Active Assets</p>
+          </div>
+
+          <div class="status-card bg-white rounded-xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <div class="bg-yellow-100 p-3 rounded-lg">
+                <i class="fas fa-tools text-yellow-600 text-xl"></i>
+              </div>
+              <span class="text-sm text-yellow-600 font-medium">-3%</span>
+            </div>
+            <h3 id="maintenanceAssets" class="text-2xl font-bold text-gray-800">
+              247
+            </h3>
+            <p class="text-gray-500 text-sm mt-1">Under Maintenance</p>
+          </div>
+
+          <div class="status-card bg-white rounded-xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <div class="bg-red-100 p-3 rounded-lg">
+                <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+              </div>
+              <span class="text-sm text-red-600 font-medium">+5%</span>
+            </div>
+            <h3 id="attentionAssets" class="text-2xl font-bold text-gray-800">
+              145
+            </h3>
+            <p class="text-gray-500 text-sm mt-1">Need Attention</p>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-xl p-4 mb-6 shadow-sm">
+          <div class="flex items-center space-x-4">
+            <span class="text-gray-600 font-medium">Filters:</span>
+            <select
+              id="categoryFilter"
+              class="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+            >
+              <option value="all">All Categories</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Vehicles">Vehicles</option>
+              <option value="Software">Software</option>
+            </select>
+            <select
+              id="statusFilter"
+              class="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+            >
+              <option value="all">All Status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Retired">Retired</option>
+            </select>
+            <select
+              class="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+            >
+              <option>All Locations</option>
+              <option>Office A</option>
+              <option>Office B</option>
+              <option>Warehouse</option>
+              <option>Remote</option>
+            </select>
+            <button
+              class="ml-auto text-blue-600 hover:text-blue-700 font-medium"
+            >
+              <i class="fas fa-filter mr-2"></i>Advanced Filters
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Asset Categories -->
+          <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-sm">
+              <div class="p-6 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-800">
+                  Asset Categories
+                </h3>
+              </div>
+              <div class="p-6">
+                <div class="grid grid-cols-2 gap-4">
+                  <div
+                    class="category-card bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4"
+                  >
+                    <div class="flex items-center justify-between mb-2">
+                      <i class="fas fa-laptop text-blue-600 text-2xl"></i>
+                      <span
+                        id="electronicsCount"
+                        class="text-2xl font-bold text-blue-800"
+                        >342</span
+                      >
+                    </div>
+                    <p class="text-gray-700 font-medium">Electronics</p>
+                    <div class="mt-2 bg-blue-200 rounded-full h-2">
+                      <div
+                        class="bg-blue-600 h-2 rounded-full"
+                        style="width: 75%"
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="category-card bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-4"
+                  >
+                    <div class="flex items-center justify-between mb-2">
+                      <i class="fas fa-chair text-green-600 text-2xl"></i>
+                      <span
+                        id="furnitureCount"
+                        class="text-2xl font-bold text-green-800"
+                        >218</span
+                      >
+                    </div>
+                    <p class="text-gray-700 font-medium">Furniture</p>
+                    <div class="mt-2 bg-green-200 rounded-full h-2">
+                      <div
+                        class="bg-green-600 h-2 rounded-full"
+                        style="width: 60%"
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="category-card bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-4"
+                  >
+                    <div class="flex items-center justify-between mb-2">
+                      <i class="fas fa-car text-purple-600 text-2xl"></i>
+                      <span
+                        id="vehiclesCount"
+                        class="text-2xl font-bold text-purple-800"
+                        >87</span
+                      >
+                    </div>
+                    <p class="text-gray-700 font-medium">Vehicles</p>
+                    <div class="mt-2 bg-purple-200 rounded-full h-2">
+                      <div
+                        class="bg-purple-600 h-2 rounded-full"
+                        style="width: 40%"
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="category-card bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg p-4"
+                  >
+                    <div class="flex items-center justify-between mb-2">
+                      <i class="fas fa-code text-orange-600 text-2xl"></i>
+                      <span
+                        id="softwareCount"
+                        class="text-2xl font-bold text-orange-800"
+                        >156</span
+                      >
+                    </div>
+                    <p class="text-gray-700 font-medium">Software</p>
+                    <div class="mt-2 bg-orange-200 rounded-full h-2">
+                      <div
+                        class="bg-orange-600 h-2 rounded-full"
+                        style="width: 55%"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Assets Table -->
+            <div class="bg-white rounded-xl shadow-sm mt-6">
+              <div class="p-6 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-800">
+                  Recent Assets
+                </h3>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Asset ID
+                      </th>
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Name
+                      </th>
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Category
+                      </th>
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Status
+                      </th>
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Assigned To
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    id="assetsTableBody"
+                    class="bg-white divide-y divide-gray-200"
+                  >
+                    <tr class="asset-row">
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                      >
+                        #AST-001
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+                      >
+                        MacBook Pro 16"
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                      >
+                        Electronics
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span
+                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                          >Active</span
+                        >
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                      >
+                        Sarah Johnson
+                      </td>
+                    </tr>
+                    <tr class="asset-row">
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                      >
+                        #AST-002
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+                      >
+                        Office Chair
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                      >
+                        Furniture
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span
+                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800"
+                          >Maintenance</span
+                        >
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                      >
+                        Mike Chen
+                      </td>
+                    </tr>
+                    <tr class="asset-row">
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                      >
+                        #AST-003
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+                      >
+                        Company Vehicle
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                      >
+                        Vehicles
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span
+                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                          >Active</span
+                        >
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                      >
+                        Alex Rivera
+                      </td>
+                    </tr>
+                    <tr class="asset-row">
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                      >
+                        #AST-004
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+                      >
+                        Adobe Creative Suite
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                      >
+                        Software
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span
+                          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                          >Active</span
+                        >
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                      >
+                        Design Team
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-sm">
+              <div class="p-6 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-800">
+                  Recent Activity
+                </h3>
+              </div>
+              <div
+                id="activityFeed"
+                class="p-6 space-y-4 max-h-96 overflow-y-auto"
+              >
+                <div
+                  class="activity-item flex items-start space-x-3"
+                  style="animation-delay: 0.1s"
+                >
+                  <div class="flex-shrink-0">
+                    <div class="bg-blue-100 p-2 rounded-full">
+                      <i class="fas fa-plus text-blue-600 text-xs"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-800">
+                      New asset added
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      Dell Monitor 27" added to Electronics
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                  </div>
+                </div>
+
+                <div
+                  class="activity-item flex items-start space-x-3"
+                  style="animation-delay: 0.2s"
+                >
+                  <div class="flex-shrink-0">
+                    <div class="bg-green-100 p-2 rounded-full">
+                      <i class="fas fa-user-check text-green-600 text-xs"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-800">
+                      Asset assigned
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      Laptop assigned to Emily Watson
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">15 minutes ago</p>
+                  </div>
+                </div>
+
+                <div
+                  class="activity-item flex items-start space-x-3"
+                  style="animation-delay: 0.3s"
+                >
+                  <div class="flex-shrink-0">
+                    <div class="bg-yellow-100 p-2 rounded-full">
+                      <i class="fas fa-tools text-yellow-600 text-xs"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-800">
+                      Maintenance scheduled
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      Printer scheduled for maintenance
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                  </div>
+                </div>
+
+                <div
+                  class="activity-item flex items-start space-x-3"
+                  style="animation-delay: 0.4s"
+                >
+                  <div class="flex-shrink-0">
+                    <div class="bg-purple-100 p-2 rounded-full">
+                      <i class="fas fa-edit text-purple-600 text-xs"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-800">
+                      Asset updated
+                    </p>
+                    <p class="text-xs text-gray-500">Vehicle details updated</p>
+                    <p class="text-xs text-gray-400 mt-1">2 hours ago</p>
+                  </div>
+                </div>
+
+                <div
+                  class="activity-item flex items-start space-x-3"
+                  style="animation-delay: 0.5s"
+                >
+                  <div class="flex-shrink-0">
+                    <div class="bg-red-100 p-2 rounded-full">
+                      <i class="fas fa-exclamation text-red-600 text-xs"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-800">
+                      Issue reported
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      Server malfunction detected
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="bg-white rounded-xl shadow-sm mt-6 p-6">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                Quick Stats
+              </h3>
+              <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600"
+                    >Assets Added This Week</span
+                  >
+                  <span
+                    id="weeklyAdded"
+                    class="text-sm font-semibold text-gray-800"
+                    >23</span
+                  >
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600"
+                    >Maintenance Completed</span
+                  >
+                  <span class="text-sm font-semibold text-gray-800">18</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Pending Assignments</span>
+                  <span class="text-sm font-semibold text-gray-800">7</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600">Total Value</span>
+                  <span class="text-sm font-semibold text-gray-800">$2.4M</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modal Container -->
+    <div id="modalContainer"></div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-20 right-4 z-50 space-y-2"></div>
+
+    <script>
+      // Data Store
+      let assets = [
+        {
+          id: 'AST-001',
+          name: 'MacBook Pro 16"',
+          category: 'Electronics',
+          status: 'Active',
+          assignedTo: 'Sarah Johnson',
+        },
+        {
+          id: 'AST-002',
+          name: 'Office Chair',
+          category: 'Furniture',
+          status: 'Maintenance',
+          assignedTo: 'Mike Chen',
+        },
+        {
+          id: 'AST-003',
+          name: 'Company Vehicle',
+          category: 'Vehicles',
+          status: 'Active',
+          assignedTo: 'Alex Rivera',
+        },
+        {
+          id: 'AST-004',
+          name: 'Adobe Creative Suite',
+          category: 'Software',
+          status: 'Active',
+          assignedTo: 'Design Team',
+        },
+      ]
+
+      let assetIdCounter = 5
+      let weeklyAddedCount = 23
+
+      // Category counts
+      let categoryCounts = {
+        Electronics: 342,
+        Furniture: 218,
+        Vehicles: 87,
+        Software: 156,
+      }
+
+      // Status counts
+      let statusCounts = {
+        total: 1284,
+        active: 892,
+        maintenance: 247,
+        attention: 145,
+      }
+
+      // Toast notification function
+      function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toastContainer')
+        const toastId = 'toast-' + Date.now()
+
+        const bgColor =
+          type === 'success'
+            ? 'bg-green-500'
+            : type === 'error'
+            ? 'bg-red-500'
+            : 'bg-blue-500'
+        const icon =
+          type === 'success'
+            ? 'fa-check-circle'
+            : type === 'error'
+            ? 'fa-exclamation-circle'
+            : 'fa-info-circle'
+
+        const toast = `
+                <div id="${toastId}" class="toast flex items-center space-x-3 ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg min-w-[300px]">
+                    <i class="fas ${icon}"></i>
+                    <span>${message}</span>
+                </div>
+            `
+
+        toastContainer.insertAdjacentHTML('beforeend', toast)
+
+        setTimeout(() => {
+          const toastElement = document.getElementById(toastId)
+          if (toastElement) {
+            toastElement.classList.add('fade-out')
+            setTimeout(() => toastElement.remove(), 300)
+          }
+        }, 3000)
+      }
+
+      // Update functions
+      function updateStatusCounts() {
+        document.getElementById('totalAssets').textContent = statusCounts.total
+        document.getElementById('activeAssets').textContent =
+          statusCounts.active
+        document.getElementById('maintenanceAssets').textContent =
+          statusCounts.maintenance
+        document.getElementById('attentionAssets').textContent =
+          statusCounts.attention
+      }
+
+      function updateCategoryCounts(category) {
+        const elementMap = {
+          Electronics: 'electronicsCount',
+          Furniture: 'furnitureCount',
+          Vehicles: 'vehiclesCount',
+          Software: 'softwareCount',
+        }
+
+        const element = document.getElementById(elementMap[category])
+        if (element) {
+          element.textContent = categoryCounts[category]
+        }
+      }
+
+      function addAssetToTable(asset) {
+        const tableBody = document.getElementById('assetsTableBody')
+        const statusColor = {
+          Active: 'bg-green-100 text-green-800',
+          Inactive: 'bg-gray-100 text-gray-800',
+          Maintenance: 'bg-yellow-100 text-yellow-800',
+          Retired: 'bg-red-100 text-red-800',
+        }
+
+        const newRow = `
+                <tr class="asset-row" style="animation: slideIn 0.5s ease">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#${
+                      asset.id
+                    }</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${
+                      asset.name
+                    }</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${
+                      asset.category
+                    }</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          statusColor[asset.status]
+                        }">${asset.status}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${
+                      asset.assignedTo || 'Unassigned'
+                    }</td>
+                </tr>
+            `
+
+        tableBody.insertAdjacentHTML('afterbegin', newRow)
+
+        // Keep only the latest 5 rows in the table
+        const rows = tableBody.querySelectorAll('tr')
+        if (rows.length > 5) {
+          rows[rows.length - 1].remove()
+        }
+      }
+
+      function addActivity(type, description) {
+        const activityFeed = document.getElementById('activityFeed')
+        const iconMap = {
+          add: {
+            icon: 'fa-plus',
+            color: 'bg-blue-100',
+            textColor: 'text-blue-600',
+          },
+          assign: {
+            icon: 'fa-user-check',
+            color: 'bg-green-100',
+            textColor: 'text-green-600',
+          },
+          update: {
+            icon: 'fa-edit',
+            color: 'bg-purple-100',
+            textColor: 'text-purple-600',
+          },
+          maintenance: {
+            icon: 'fa-tools',
+            color: 'bg-yellow-100',
+            textColor: 'text-yellow-600',
+          },
+          issue: {
+            icon: 'fa-exclamation',
+            color: 'bg-red-100',
+            textColor: 'text-red-600',
+          },
+        }
+
+        const config = iconMap[type] || iconMap['add']
+
+        const newActivity = `
+                <div class="activity-item flex items-start space-x-3" style="animation-delay: 0s">
+                    <div class="flex-shrink-0">
+                        <div class="${config.color} p-2 rounded-full">
+                            <i class="fas ${config.icon} ${config.textColor} text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-800">${description}</p>
+                        <p class="text-xs text-gray-400 mt-1">Just now</p>
+                    </div>
+                </div>
+            `
+
+        activityFeed.insertAdjacentHTML('afterbegin', newActivity)
+
+        // Keep only the latest 5 activities
+        const activities = activityFeed.querySelectorAll('.activity-item')
+        if (activities.length > 5) {
+          activities[activities.length - 1].remove()
+        }
+      }
+
+      // Modal functions
+      function openAddAssetModal() {
+        const modal = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-xl p-6 w-full max-w-md transform transition-all">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Add New Asset</h3>
+                        <form id="addAssetForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Asset Name *</label>
+                                <input type="text" id="assetName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Enter asset name">
+                                <span class="text-red-500 text-xs hidden" id="nameError">Asset name is required</span>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                                <select id="assetCategory" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                                    <option value="">Select a category</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Furniture">Furniture</option>
+                                    <option value="Vehicles">Vehicles</option>
+                                    <option value="Software">Software</option>
+                                </select>
+                                <span class="text-red-500 text-xs hidden" id="categoryError">Please select a category</span>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Serial Number</label>
+                                <input type="text" id="serialNumber" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Enter serial number">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Location *</label>
+                                <input type="text" id="assetLocation" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Enter location">
+                                <span class="text-red-500 text-xs hidden" id="locationError">Location is required</span>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select id="assetStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Maintenance">Maintenance</option>
+                                    <option value="Retired">Retired</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Assigned To</label>
+                                <input type="text" id="assignedTo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Enter assignee name (optional)">
+                            </div>
+                            <div class="flex justify-end space-x-3 mt-6">
+                                <button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">Cancel</button>
+                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add Asset</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `
+        document.getElementById('modalContainer').innerHTML = modal
+
+        // Add form submission handler
+        document
+          .getElementById('addAssetForm')
+          .addEventListener('submit', handleAddAsset)
+      }
+
+      function handleAddAsset(e) {
+        e.preventDefault()
+
+        // Reset error messages
+        document
+          .querySelectorAll('.text-red-500')
+          .forEach((el) => el.classList.add('hidden'))
+
+        // Get form values
+        const name = document.getElementById('assetName').value.trim()
+        const category = document.getElementById('assetCategory').value
+        const serialNumber = document
+          .getElementById('serialNumber')
+          .value.trim()
+        const location = document.getElementById('assetLocation').value.trim()
+        const status = document.getElementById('assetStatus').value
+        const assignedTo = document.getElementById('assignedTo').value.trim()
+
+        // Validation
+        let isValid = true
+
+        if (!name) {
+          document.getElementById('nameError').classList.remove('hidden')
+          isValid = false
+        }
+
+        if (!category) {
+          document.getElementById('categoryError').classList.remove('hidden')
+          isValid = false
+        }
+
+        if (!location) {
+          document.getElementById('locationError').classList.remove('hidden')
+          isValid = false
+        }
+
+        if (!isValid) return
+
+        // Create new asset
+        const newAsset = {
+          id: 'AST-' + String(assetIdCounter).padStart(3, '0'),
+          name: name,
+          category: category,
+          status: status,
+          assignedTo: assignedTo || 'Unassigned',
+          serialNumber: serialNumber,
+          location: location,
+          dateAdded: new Date(),
+        }
+
+        // Add to assets array
+        assets.unshift(newAsset)
+        assetIdCounter++
+
+        // Update counts
+        statusCounts.total++
+        if (status === 'Active') statusCounts.active++
+        else if (status === 'Maintenance') statusCounts.maintenance++
+        else if (status === 'Retired') statusCounts.attention++
+
+        categoryCounts[category]++
+        weeklyAddedCount++
+
+        // Update UI
+        updateStatusCounts()
+        updateCategoryCounts(category)
+        addAssetToTable(newAsset)
+        addActivity('add', `New asset "${name}" added to ${category}`)
+
+        // Update weekly stats
+        document.getElementById('weeklyAdded').textContent = weeklyAddedCount
+
+        // Show success message
+        showToast(`Asset "${name}" has been successfully added!`, 'success')
+
+        // Close modal
+        closeModal()
+      }
+
+      function openUpdateModal() {
+        const modal = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-xl p-6 w-full max-w-md transform transition-all">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Update Asset Details</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Select Asset</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                                    ${assets
+                                      .map(
+                                        (asset) =>
+                                          `<option>${asset.name} (#${asset.id})</option>`
+                                      )
+                                      .join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                                    <option>Active</option>
+                                    <option>Inactive</option>
+                                    <option>Maintenance</option>
+                                    <option>Retired</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                                <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" rows="3" placeholder="Add notes..."></textarea>
+                            </div>
+                            <div class="flex justify-end space-x-3 mt-6">
+                                <button onclick="closeModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">Cancel</button>
+                                <button onclick="handleUpdate()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `
+        document.getElementById('modalContainer').innerHTML = modal
+      }
+
+      function handleUpdate() {
+        showToast('Asset details updated successfully!', 'success')
+        closeModal()
+      }
+
+      function openAssignModal() {
+        const modal = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-xl p-6 w-full max-w-md transform transition-all">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Assign Asset to User</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Select Asset</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                                    ${assets
+                                      .map(
+                                        (asset) =>
+                                          `<option>${asset.name} (#${asset.id})</option>`
+                                      )
+                                      .join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Select User</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                                    <option>Sarah Johnson</option>
+                                    <option>Mike Chen</option>
+                                    <option>Alex Rivera</option>
+                                    <option>Emily Watson</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Assignment Date</label>
+                                <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Return Date (Optional)</label>
+                                <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div class="flex justify-end space-x-3 mt-6">
+                                <button onclick="closeModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">Cancel</button>
+                                <button onclick="handleAssign()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">Assign</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `
+        document.getElementById('modalContainer').innerHTML = modal
+      }
+
+      function handleAssign() {
+        showToast('Asset assigned successfully!', 'success')
+        closeModal()
+      }
+
+      function closeModal() {
+        document.getElementById('modalContainer').innerHTML = ''
+      }
+
+      // Search functionality
+      document
+        .getElementById('globalSearch')
+        .addEventListener('input', function (e) {
+          const searchTerm = e.target.value.toLowerCase()
+          const rows = document.querySelectorAll('#assetsTableBody tr')
+
+          rows.forEach((row) => {
+            const text = row.textContent.toLowerCase()
+            row.style.display = text.includes(searchTerm) ? '' : 'none'
+          })
+        })
+
+      // Filter functionality
+      document
+        .getElementById('categoryFilter')
+        .addEventListener('change', function (e) {
+          const category = e.target.value
+          const rows = document.querySelectorAll('#assetsTableBody tr')
+
+          rows.forEach((row) => {
+            if (category === 'all') {
+              row.style.display = ''
+            } else {
+              const rowCategory = row.cells[2].textContent
+              row.style.display = rowCategory === category ? '' : 'none'
+            }
+          })
+        })
+
+      document
+        .getElementById('statusFilter')
+        .addEventListener('change', function (e) {
+          const status = e.target.value
+          const rows = document.querySelectorAll('#assetsTableBody tr')
+
+          rows.forEach((row) => {
+            if (status === 'all') {
+              row.style.display = ''
+            } else {
+              const rowStatus = row.cells[3].textContent.trim()
+              row.style.display = rowStatus === status ? '' : 'none'
+            }
+          })
+        })
+
+      // Initialize tooltips and other interactive elements
+      document.addEventListener('DOMContentLoaded', function () {
+        // Add hover effects for interactive elements
+        const cards = document.querySelectorAll('.status-card, .category-card')
+        cards.forEach((card) => {
+          card.addEventListener('mouseenter', function () {
+            this.style.cursor = 'pointer'
+          })
+        })
+
+        // Add click handlers for category cards
+        document.querySelectorAll('.category-card').forEach((card) => {
+          card.addEventListener('click', function () {
+            const categoryName = this.querySelector('p').textContent
+            document.getElementById('categoryFilter').value = categoryName
+            document
+              .getElementById('categoryFilter')
+              .dispatchEvent(new Event('change'))
+          })
+        })
+      })
+    </script>
+  </body>
+</html>
